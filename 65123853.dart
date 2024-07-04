@@ -200,8 +200,9 @@ void manageOrder(Restaurant restaurant) {
     print('1. Place Order');
     print('2. Complete Order');
     print('3. List All Orders');
+    print('4. Remove Item from Order');
     print('0. Back');
-    stdout.write('Please enter your choice (1–3 or 0): ');
+    stdout.write('Please enter your choice (1–4 or 0): ');
     String? choice = stdin.readLineSync();
 
     if (choice == '0') {
@@ -217,6 +218,9 @@ void manageOrder(Restaurant restaurant) {
         break;
       case '3':
         listOrders(restaurant);
+        break;
+      case '4':
+        removeOrderItem(restaurant);
         break;
       default:
         print('Invalid choice. Please try again.');
@@ -278,7 +282,58 @@ void listOrders(Restaurant restaurant) {
   }
 }
 
+void removeOrderItem(Restaurant restaurant) {
+  stdout.write('Enter Order ID to modify: ');
+  String? orderId = stdin.readLineSync();
+
+  try {
+    Order order = restaurant.getOrder(orderId ?? '');
+    stdout.write('Enter the name of the item to remove: ');
+    String? itemName = stdin.readLineSync();
+
+    MenuItem? item = order.items.firstWhere((item) => item.name == itemName, orElse: () => MenuItem('', 0, ''));
+    
+    if (item.name != '') {
+      order.removeItem(item);
+      print('Item removed from order.');
+    } else {
+      print('Item not found in order.');
+    }
+
+    // Display the updated order
+    print(order);
+  } catch (e) {
+    print('Order not found.');
+  }
+}
+
 void searchItem(Restaurant restaurant) {
+  while (true) {
+    print('\n[ Search ]');
+    print('1. Search Menu Item');
+    print('2. Search Order by ID');
+    print('0. Back');
+    stdout.write('Please enter your choice (1-2 or 0): ');
+    String? choice = stdin.readLineSync();
+
+    if (choice == '0') {
+      break;
+    }
+
+    switch (choice) {
+      case '1':
+        searchMenuItem(restaurant);
+        break;
+      case '2':
+        searchOrder(restaurant);
+        break;
+      default:
+        print('Invalid choice. Please try again.');
+    }
+  }
+}
+
+void searchMenuItem(Restaurant restaurant) {
   stdout.write('Enter item name to search: ');
   String? name = stdin.readLineSync();
 
@@ -288,5 +343,17 @@ void searchItem(Restaurant restaurant) {
     print('Item found: $item');
   } else {
     print('Item not found.');
+  }
+}
+
+void searchOrder(Restaurant restaurant) {
+  stdout.write('Enter Order ID to search: ');
+  String? orderId = stdin.readLineSync();
+
+  try {
+    Order order = restaurant.getOrder(orderId ?? '');
+    print('Order found: $order');
+  } catch (e) {
+    print('Order not found.');
   }
 }
